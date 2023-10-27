@@ -23,3 +23,16 @@ WARNING average CPU load: 47.36% - momentary 56.54%
 
 
 ```
+# Settings
+## Keep default
+PUSHBULLET_ENDPOINT_URL = "https://api.pushbullet.com/v2/pushes"
+
+## All you have to change
+PUSHBULLET_API_KEY = "put your key here and rename this file from .env.changeme to .env "
+## 
+CPU_AVERAGE_MAX_THRESHOLD = "80.0"
+CHECK_INTERVAL_SECONDS = "1"
+TIMESPAN_AVERAGE_MINUTES = "1"
+THRESHOLD_DURATION_ALARM_MINUTES = "5"
+ENABLE_CONSOLE_OUTPUT = "true"
+SEND_TEST_NOTIFICATION_ON_LAUNCH = "true"
