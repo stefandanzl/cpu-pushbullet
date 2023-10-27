@@ -149,13 +149,13 @@ func averageArray(arr []float64) float64 {
 	return sum / float64(len(arr))
 }
 
-func timestamp() string {
-	t := time.Now()
-	formatted := fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d : ",
-		t.Year(), t.Month(), t.Day(),
-		t.Hour(), t.Minute(), t.Second())
-	return formatted
-}
+// func timestamp() string {
+// 	t := time.Now()
+// 	formatted := fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d : ",
+// 		t.Year(), t.Month(), t.Day(),
+// 		t.Hour(), t.Minute(), t.Second())
+// 	return formatted
+// }
 
 func main() {
 
