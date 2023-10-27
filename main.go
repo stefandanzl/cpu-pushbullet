@@ -24,6 +24,7 @@ var averageLen int
 var duration time.Duration
 var logger *log.Logger
 var enableConsole bool
+var enableTestNotif bool
 
 func checkCPULoad() float64 {
 	percent, _ := cpu.Percent(time.Second, false)
@@ -117,6 +118,18 @@ func setEnvs() {
 	avergageValsFloat := timespanAv / checkInterval * 60
 	averageLen = int(avergageValsFloat)
 
+	// Read the SEND_TEST_NOTIFICATION_ON_LAUNCH variable from the environment
+	enableTestNotifStr := os.Getenv("SEND_TEST_NOTIFICATION_ON_LAUNCH")
+
+	// Convert the string to a boolean
+	enableTestNotif, err := strconv.ParseBool(enableTestNotifStr)
+	if err != nil {
+		log.Fatalf("Error parsing SEND_TEST_NOTIFICATION_ON_LAUNCH: %v", err)
+	}
+
+	if enableTestNotif {
+		pushAlert(420.69)
+	}
 }
 
 func pushArray(item float64, arr []float64) []float64 {
