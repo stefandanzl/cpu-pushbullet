@@ -6,4 +6,5 @@ This little CLI app written in Go will allow you to monitor your average compute
 All you have to do is visit https://www.pushbullet.com/#settings/account and [Create Access Token].
 
 Paste that into the correspondig slot in your .env file and everything is set up!
+
 Change the filename .env.changeme to .env
