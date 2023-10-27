@@ -9,7 +9,7 @@ All you have to do is visit https://www.pushbullet.com/#settings/account and [Cr
 
 Paste that into the correspondig slot in your .env file and everything is set up!
 
-Change the filename .env.changeme to .env
+
 
 Example Console output:
 ```bash
@@ -25,7 +25,8 @@ WARNING average CPU load: 47.36% - momentary 56.54%
 ```
 # Settings
 ## Needs to be changed
-PUSHBULLET_API_KEY = "put your key here and rename this file from .env.changeme to .env "
+Change the filename `.env.changeme` to `.env`
+`PUSHBULLET_API_KEY = "put your key here and rename this file from .env.changeme to .env "`
 
 ## Can be configured to your liking or stay default
 
