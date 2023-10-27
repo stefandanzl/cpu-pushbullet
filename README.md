@@ -10,3 +10,15 @@ All you have to do is visit https://www.pushbullet.com/#settings/account and [Cr
 Paste that into the correspondig slot in your .env file and everything is set up!
 
 Change the filename .env.changeme to .env
+
+```bash
+WARNING average CPU load: 45.36% - momentary 42.69%
+WARNING average CPU load: 45.67% - momentary 71.09%
+WARNING average CPU load: 46.04% - momentary 55.00%
+WARNING average CPU load: 46.41% - momentary 58.98%
+WARNING average CPU load: 46.68% - momentary 51.54%
+WARNING average CPU load: 47.09% - momentary 56.92%
+WARNING average CPU load: 47.36% - momentary 56.54%
+
+
+```
