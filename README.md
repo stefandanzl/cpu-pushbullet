@@ -47,3 +47,13 @@ WARNING average CPU load: 46.68% - momentary 51.54%
 WARNING average CPU load: 47.09% - momentary 56.92%
 WARNING average CPU load: 47.36% - momentary 56.54%
 ```
+
+
+Example `application.log` content:
+```
+CPU: 2023/10/27 15:22:59 CPU watcher launched.
+CPU: 2023/10/27 15:23:00 Environment variables loaded.
+CPU: 2023/10/27 15:23:22 Closing Application
+CPU: 2023/10/27 15:23:25 CPU watcher launched.
+CPU: 2023/10/27 15:23:26 Environment variables loaded.
+```
