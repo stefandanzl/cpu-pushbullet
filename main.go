@@ -17,14 +17,31 @@ import (
 )
 
 // Define the Pushbullet API endpoint and your API token here.
-var apiURL string
-var apiKey string
-var threshold float64
-var averageLen int
 var duration time.Duration
 var logger *log.Logger
+var apiKey string
+
+var apiURL string
+var threshold float64
+var averageLen int
+
 var enableConsole bool
 var enableTestNotif bool
+var timespanAverage float64
+var checkInterval float64
+
+// var enableConsole = true
+// var checkInterval = 1.0
+// var timespanAverage = 1.0
+// var enableTestNotif = true
+// var threshold = 80.0
+// var apiURL = "https://api.pushbullet.com/v2/pushes"
+
+// apiURL := "ht#tps://api.pushbullet.com/v2/pushes"
+// threshold := "80.0"
+// averag#eLen := "1"
+// enableConsole
+// enableTestNotif
 
 func checkCPULoad() float64 {
 	percent, _ := cpu.Percent(time.Second, false)
@@ -75,56 +92,79 @@ func pushAlert(cpuLoad float64) {
 }
 
 func setEnvs() {
-	apiURL = os.Getenv("PUSHBULLET_ENDPOINT_URL")
-	apiKey = os.Getenv("PUSHBULLET_API_KEY")
+	var err error
 
-	// Access environment variables
-	thresholdStr := os.Getenv("CPU_AVERAGE_MAX_THRESHOLD")
-
-	// Convert the string to an integer
-	threshold_, err := strconv.ParseFloat(thresholdStr, 64)
-	if err != nil {
-		log.Fatalf("Error converting CPU_AVERAGE_MAX_THRESHOLD to float: %v", err)
+	apiURLStr := os.Getenv("PUSHBULLET_ENDPOINT_URL")
+	if apiURLStr != "" {
+		apiURL = apiURLStr
 	}
-	threshold = threshold_
+
+	apiKey = os.Getenv("PUSHBULLET_API_KEY")
+	if apiKey == "" {
+		fmt.Println("NO PUSHBULLET_API_KEY given!")
+		log.Fatalf("NO PUSHBULLET_API_KEY given!")
+		os.Exit(1)
+	} else if apiKey == "SKIP" {
+		fmt.Println("NO PUSHBULLET_API_KEY given!")
+		logger.Println("NO PUSHBULLET_API_KEY given!")
+		fmt.Println("PUSHBULLET API SKIPPED")
+		logger.Println("PUSHBULLET API SKIPPED")
+	}
+
+	thresholdStr := os.Getenv("CPU_AVERAGE_MAX_THRESHOLD")
+	if thresholdStr != "" {
+
+		// Convert the string to an integer
+		threshold, err = strconv.ParseFloat(thresholdStr, 64)
+		if err != nil {
+			log.Fatalf("Error converting CPU_AVERAGE_MAX_THRESHOLD to float: %v", err)
+		}
+	}
 
 	checkIntervalStr := os.Getenv("CHECK_INTERVAL_SECONDS")
-	// Convert the string to an integer
-	checkInterval, err := strconv.ParseFloat(checkIntervalStr, 64)
-	if err != nil {
-		log.Fatalf("Error converting CHECK_INTERVAL_SECONDS to float: %v", err)
+
+	if checkIntervalStr != "" {
+		// Convert the string to an integer
+		checkInterval, err = strconv.ParseFloat(checkIntervalStr, 64)
+
+		if err != nil {
+			log.Fatalf("Error converting CHECK_INTERVAL_SECONDS to float: %v", err)
+		}
 	}
 
 	timespanAvStr := os.Getenv("TIMESPAN_AVERAGE_MINUTES")
-	// Convert the string to an integer
-	timespanAv, err := strconv.ParseFloat(timespanAvStr, 64)
-	if err != nil {
-		log.Fatalf("Error converting TIMESPAN_AVERAGE_MINUTES to float: %v", err)
+	if timespanAvStr != "" {
+		// Convert the string to an integer
+		timespanAverage, err = strconv.ParseFloat(timespanAvStr, 64)
+		if err != nil {
+			log.Fatalf("Error converting TIMESPAN_AVERAGE_MINUTES to float: %v", err)
+		}
 	}
 
 	// Read the ENABLE_CONSOLE_OUTPUT variable from the environment
 	enableConsoleOutputStr := os.Getenv("ENABLE_CONSOLE_OUTPUT")
-
-	// Convert the string to a boolean
-	enableConsoleOutput_, err := strconv.ParseBool(enableConsoleOutputStr)
-	if err != nil {
-		log.Fatalf("Error parsing ENABLE_CONSOLE_OUTPUT: %v", err)
+	if enableConsoleOutputStr != "" {
+		// Convert the string to a boolean
+		enableConsole, err = strconv.ParseBool(enableConsoleOutputStr)
+		if err != nil {
+			log.Fatalf("Error parsing ENABLE_CONSOLE_OUTPUT: %v", err)
+		}
 	}
-	enableConsole = enableConsoleOutput_
 
 	duration = time.Second * time.Duration(checkInterval) //checkInterval//time.Minute
 
 	// Calculate the amount of measured points needed for the given time settings
-	avergageValsFloat := timespanAv / checkInterval * 60
+	avergageValsFloat := timespanAverage / checkInterval * 60
 	averageLen = int(avergageValsFloat)
 
 	// Read the SEND_TEST_NOTIFICATION_ON_LAUNCH variable from the environment
 	enableTestNotifStr := os.Getenv("SEND_TEST_NOTIFICATION_ON_LAUNCH")
-
-	// Convert the string to a boolean
-	enableTestNotif, err := strconv.ParseBool(enableTestNotifStr)
-	if err != nil {
-		log.Fatalf("Error parsing SEND_TEST_NOTIFICATION_ON_LAUNCH: %v", err)
+	if enableTestNotifStr != "" {
+		// Convert the string to a boolean
+		enableTestNotif, err = strconv.ParseBool(enableTestNotifStr)
+		if err != nil {
+			log.Fatalf("Error parsing SEND_TEST_NOTIFICATION_ON_LAUNCH: %v", err)
+		}
 	}
 
 	if enableTestNotif {
@@ -187,8 +227,14 @@ func main() {
 	// Print the formatted time
 	logger.Println("CPU watcher launched.")
 
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+	if os.Getenv("PUSHBULLET_API_KEY") != "DOCKER" {
+		// fmt.Println("Environment variable PUSHBULLET_API_KEY not set!")
+		// logger.Println("Environment variable PUSHBULLET_API_KEY not set!")
+		if err := godotenv.Load(".env"); err != nil {
+			log.Fatalf("Error loading .env file: %v", err)
+		}
+	} else {
+		fmt.Println("Environment variable PUSHBULLET_API_KEY detected")
 	}
 	setEnvs()
 	logger.Println("Environment variables loaded.")
