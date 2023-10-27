@@ -109,6 +109,11 @@ func setEnvs() {
 		logger.Println("NO PUSHBULLET_API_KEY given!")
 		fmt.Println("PUSHBULLET API SKIPPED")
 		logger.Println("PUSHBULLET API SKIPPED")
+		apiURL = "https://api.pushbullet.com/v2/pushes"
+		threshold = 80.0
+		averageLen = 1.0
+		enableConsole = true
+		enableTestNotif = true
 	}
 
 	thresholdStr := os.Getenv("CPU_AVERAGE_MAX_THRESHOLD")
@@ -227,14 +232,13 @@ func main() {
 	// Print the formatted time
 	logger.Println("CPU watcher launched.")
 
-	if os.Getenv("PUSHBULLET_API_KEY") != "DOCKER" {
-		// fmt.Println("Environment variable PUSHBULLET_API_KEY not set!")
-		// logger.Println("Environment variable PUSHBULLET_API_KEY not set!")
+	if os.Getenv("DISABLE_ENV_FILE") != "true" && os.Getenv("DISABLE_ENV_FILE") == "" {
+		fmt.Println("Reading Environment variables from file .env")
+		logger.Println("Reading Environment variables from file .env")
 		if err := godotenv.Load(".env"); err != nil {
+			fmt.Printf("Error loading .env file: %v", err)
 			log.Fatalf("Error loading .env file: %v", err)
 		}
-	} else {
-		fmt.Println("Environment variable PUSHBULLET_API_KEY detected")
 	}
 	setEnvs()
 	logger.Println("Environment variables loaded.")
