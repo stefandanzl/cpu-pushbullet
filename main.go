@@ -17,8 +17,8 @@ import (
 )
 
 // Define the Pushbullet API endpoint and your API token here.
-var apiURL string //= "https://api.pushbullet.com/v2/pushes"
-var apiKey string //= "o.CDYBJuIgnOuVtf7im2HVu7pFIgyfxES4"
+var apiURL string
+var apiKey string
 var threshold float64
 var averageLen int
 var duration time.Duration
@@ -110,17 +110,7 @@ func setEnvs() {
 		log.Fatalf("Error parsing ENABLE_CONSOLE_OUTPUT: %v", err)
 	}
 	enableConsole = enableConsoleOutput_
-	// threshDurStr := os.Getenv("THRESHOLD_DURATION_ALARM_MINUTES")
-	// // Convert the string to an integer
-	// threshDur, err := strconv.ParseFloat(threshDurStr, 64)
-	// if err != nil {
-	// 	log.Fatalf("Error converting THRESHOLD_DURATION_ALARM_MINUTES to float: %v", err)
-	// } +++++
 
-	// anotherVar := os.Getenv("ANOTHER_VARIABLE")
-
-	// threshold := 80.0 // Set the threshold to 80%
-	// consecutiveExceedances := 0
 	duration = time.Second * time.Duration(checkInterval) //checkInterval//time.Minute
 
 	// Calculate the amount of measured points needed for the given time settings
@@ -134,9 +124,7 @@ func pushArray(item float64, arr []float64) []float64 {
 	if len(arr) < averageLen {
 		return append([]float64{item}, arr...)
 	} else {
-		// newSlice := make([]int, len(slice)+1)
-		// newSlice[0] = newValue
-		// copy(newSlice[1:], slice)
+
 		return append([]float64{item}, arr[:len(arr)-1]...)
 	}
 }
