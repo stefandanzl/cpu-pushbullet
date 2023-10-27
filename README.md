@@ -11,6 +11,32 @@ Paste that into the correspondig slot in your .env file and everything is set up
 
 
 
+
+# Settings
+## Needs to be changed
+- Change the filename `.env.changeme` to `.env`
+
+- `PUSHBULLET_API_KEY = "put your key here and rename this file from .env.changeme to .env "`
+
+## Can be configured to your liking or stay default
+
+- `CPU_AVERAGE_MAX_THRESHOLD = "80.0"` - Averaged CPU load in percent that will trigger a push notification and a log entry
+
+- `CHECK_INTERVAL_SECONDS = "1"` - Check current CPU load every XX seconds
+
+- `TIMESPAN_AVERAGE_MINUTES = "1"` - Length of time window in minutes that will be used for calculating average CPU load
+
+- `THRESHOLD_DURATION_ALARM_MINUTES = "5"` - Currently not used
+
+- `ENABLE_CONSOLE_OUTPUT = "true"` - Can be disabled if app is run in background
+
+- `SEND_TEST_NOTIFICATION_ON_LAUNCH = "true"` - To test if your API Key is set up correctly this will send you a notification via Pushbullet once on startup
+
+## Keep default values
+- `PUSHBULLET_ENDPOINT_URL = "https://api.pushbullet.com/v2/pushes"`
+
+
+
 Example Console output:
 ```bash
 WARNING average CPU load: 45.36% - momentary 42.69%
@@ -20,28 +46,4 @@ WARNING average CPU load: 46.41% - momentary 58.98%
 WARNING average CPU load: 46.68% - momentary 51.54%
 WARNING average CPU load: 47.09% - momentary 56.92%
 WARNING average CPU load: 47.36% - momentary 56.54%
-
-
 ```
-# Settings
-## Needs to be changed
-Change the filename `.env.changeme` to `.env`
-`PUSHBULLET_API_KEY = "put your key here and rename this file from .env.changeme to .env "`
-
-## Can be configured to your liking or stay default
-
-`CPU_AVERAGE_MAX_THRESHOLD = "80.0"`
-
-`CHECK_INTERVAL_SECONDS = "1"`
-
-`TIMESPAN_AVERAGE_MINUTES = "1"`
-
-`THRESHOLD_DURATION_ALARM_MINUTES = "5"`
-
-`ENABLE_CONSOLE_OUTPUT = "true"`
-
-`SEND_TEST_NOTIFICATION_ON_LAUNCH = "true"`
-
-## Keep default values
-`PUSHBULLET_ENDPOINT_URL = "https://api.pushbullet.com/v2/pushes"`
-
