@@ -14,6 +14,17 @@ COPY cpu-pushbullet /app/.
 # Set execute permission for the binary
 RUN chmod +x /app/cpu-pushbullet
 
+# Create a new user and group
+#RUN groupadd -r mygroup && useradd -r -g gogroup gouser
+# RUN useradd -ms /bin/bash gouser
+
+RUN adduser -D goboy
+
+
+RUN chown -R goboy /app
+
+# Set the user for the container
+USER goboy
 
 # Set default environment variables
 
