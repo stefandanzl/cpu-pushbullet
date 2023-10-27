@@ -11,6 +11,7 @@ Paste that into the correspondig slot in your .env file and everything is set up
 
 Change the filename .env.changeme to .env
 
+Example Console output:
 ```bash
 WARNING average CPU load: 45.36% - momentary 42.69%
 WARNING average CPU load: 45.67% - momentary 71.09%
