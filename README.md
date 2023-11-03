@@ -57,3 +57,9 @@ CPU: 2023/10/27 15:23:22 Closing Application
 CPU: 2023/10/27 15:23:25 CPU watcher launched.
 CPU: 2023/10/27 15:23:26 Environment variables loaded.
 ```
+
+# Docker
+The simplest way to use the Docker image is by using 
+```
+docker run -e PUSHBULLET_API_KEY="YourAPIKeyHere" ghcr.io/stefandanzl/cpu-pushbullet:latest
+```
