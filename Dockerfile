@@ -1,6 +1,9 @@
 # Use the official Alpine Linux image as the base image
 FROM alpine:latest
 
+RUN apk add --no-cache tzdata
+ENV TZ=Europe/Vienna
+
 # Set the working directory inside the container
 WORKDIR /app
 
