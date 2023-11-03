@@ -17,7 +17,7 @@ import (
 )
 
 // Define the Pushbullet API endpoint and your API token here.
-var duration time.Duration
+var checkIntervalDuration time.Duration
 var logger *log.Logger
 var apiKey string
 
@@ -29,6 +29,9 @@ var enableConsole bool
 var enableTestNotif bool
 var timespanAverage float64
 var checkInterval float64
+
+var notifInterval int
+var thresholdDuration int
 
 // var enableConsole = true
 // var checkInterval = 1.0
@@ -50,10 +53,11 @@ func checkCPULoad() float64 {
 
 func pushAlert(cpuLoad float64) {
 	// Create a data structure for your Pushbullet request.
+	timeString := time.Now().Format("2006-01-02 15:04:05")
 	data := map[string]interface{}{
 		"type":  "note",
 		"title": "CPU Alert",
-		"body":  fmt.Sprintf("High CPU load detected: %.2f%%", cpuLoad), //"This is a test message sent via Pushbullet API.",
+		"body":  fmt.Sprintf("%s \nHigh CPU load detected: %.2f%%", timeString, cpuLoad), //"This is a test message sent via Pushbullet API.",
 	}
 
 	// Convert the data to JSON.
@@ -156,7 +160,7 @@ func setEnvs() {
 		}
 	}
 
-	duration = time.Second * time.Duration(checkInterval) //checkInterval//time.Minute
+	checkIntervalDuration = time.Second * time.Duration(checkInterval) //checkInterval//time.Minute
 
 	// Calculate the amount of measured points needed for the given time settings
 	avergageValsFloat := timespanAverage / checkInterval * 60
@@ -169,6 +173,22 @@ func setEnvs() {
 		enableTestNotif, err = strconv.ParseBool(enableTestNotifStr)
 		if err != nil {
 			log.Fatalf("Error parsing SEND_TEST_NOTIFICATION_ON_LAUNCH: %v", err)
+		}
+	}
+
+	notifIntervalStr := os.Getenv("NOTIFICATION_INTERVAL_MINUTES")
+	if notifIntervalStr != "" {
+		notifInterval, err = strconv.Atoi(notifIntervalStr)
+		if err != nil {
+			log.Fatalf("Error parsing NOTIFICATION_INTERVAL_MINUTES: %v", err)
+		}
+	}
+
+	thresholdDurationStr := os.Getenv("THRESHOLD_DURATION_ALARM_MINUTES")
+	if thresholdDurationStr != "" {
+		thresholdDuration, err = strconv.Atoi(thresholdDurationStr)
+		if err != nil {
+			log.Fatalf("Error parsing THRESHOLD_DURATION_ALARM_MINUTES: %v", err)
 		}
 	}
 
@@ -247,24 +267,68 @@ func main() {
 
 	// array := make([]float64, 25)
 	var averageCPU float64
+
+	now := time.Now()
+	lastAlertT := now.Add(-time.Duration(notifInterval) * time.Minute)
+
+	//timestamp := now.Add(-time.Duration(notifInterval))
+
+	thresholdCounter := 0
+	thresholdCheckedT := time.Now()
+
+	thresholdMax := int(thresholdDuration)
+	// fmt.Println(time.Duration(notifInterval) * time.Minute)
+	// fmt.Println(time.Now().After(lastAlertT.Add(time.Duration(notifInterval) * time.Minute)))
+
 	for {
 
 		cpuLoad := checkCPULoad()
 		array = pushArray(cpuLoad, array)
 		averageCPU = averageArray(array)
+		// fmt.Println(thresholdCounter)
 
 		// fmt.Printf("Current CPU load: %.2f%%\n", averageCPU)
 		if enableConsole {
-			fmt.Printf("WARNING average CPU load: %.2f%% - momentary %.2f%%\n", averageCPU, cpuLoad)
-		}
-		if averageCPU > threshold {
-			logger.Printf("WARNING average CPU load: %.2f%% - momentary %.2f%%\n", averageCPU, cpuLoad)
-			pushAlert(averageCPU)
-
-		} else {
-			continue
+			fmt.Printf("Average CPU load: %.2f%% - momentary %.2f%%\n", averageCPU, cpuLoad)
 		}
 
-		time.Sleep(duration)
+		if time.Now().After(thresholdCheckedT.Add(time.Minute)) {
+			thresholdCheckedT = time.Now()
+			if averageCPU > threshold {
+				if enableConsole {
+					fmt.Println(time.Now().Format("2006-02-13 15:04:05"))
+					fmt.Printf("Warning! CPU load: %.2f%% - momentary %.2f%%\n", averageCPU, cpuLoad)
+				}
+				if thresholdCounter == thresholdMax {
+					// fmt.Println("Max reached")
+					if time.Now().After(lastAlertT.Add(time.Duration(notifInterval) * time.Minute)) {
+						lastAlertT = time.Now()
+						pushAlert(averageCPU)
+						logger.Println("Pushed Notification")
+
+					}
+				} else {
+					thresholdCounter += 1
+				}
+			} else {
+				if thresholdCounter > 0 {
+					thresholdCounter -= 1
+				}
+			}
+		}
+		// if averageCPU > threshold {
+		// 	logger.Printf("WARNING average CPU load: %.2f%% - momentary %.2f%%\n", averageCPU, cpuLoad)
+		// 	timestamp := time.Now().Add(- time.Minute * time.Duration(thresholdDuration))
+		// 	if time.Now().After(timestamp.Add(time.Duration(notifInterval) * time.Minute)) { // timestamp.Add + time.Duration(notifInterval).Minutes() {
+		// 		pushAlert(averageCPU)
+		// 		fmt.Println("A:", time.Now().Second())
+		// 		fmt.Println("B:", timestamp.Add(time.Duration(notifInterval)).Second())
+		// 		timestamp = time.Now()
+		// 		fmt.Println("T:", timestamp)
+		// 	}
+
+		// }
+
+		time.Sleep(checkIntervalDuration)
 	}
 }
